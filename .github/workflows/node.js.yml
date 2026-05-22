@@ -21,14 +21,6 @@ jobs:
         project:
         - http2/exercise
         - http2/push
-        - polling/backoff-and-retry
-        - polling/exercise
-        - polling/no-pause
-        - polling/pause-on-unfocus
-        - websockets/exercise-raw
-        - websockets/exercise-socketio
-        - websockets/raw
-        - websockets/socketio
 
     steps:
     - uses: actions/checkout@v4
