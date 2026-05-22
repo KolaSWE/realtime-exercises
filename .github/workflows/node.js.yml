@@ -18,6 +18,17 @@ jobs:
       matrix:
         node-version: [18.x, 20.x, 22.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        project:
+        - http2/exercise
+        - http2/push
+        - polling/backoff-and-retry
+        - polling/exercise
+        - polling/no-pause
+        - polling/pause-on-unfocus
+        - websockets/exercise-raw
+        - websockets/exercise-socketio
+        - websockets/raw
+        - websockets/socketio
 
     steps:
     - uses: actions/checkout@v4
@@ -26,6 +37,15 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+        cache-dependency-path: ${{ matrix.project }}/package-lock.json
+          - name: Install dependencies
+            working-directory: ${{ matrix.project }}
+            run: npm ci
+
+          - name: Build
+            working-directory: ${{ matrix.project }}
+            run: npm run build --if-present
+
+          - name: Test
+            working-directory: ${{ matrix.project }}
+            run: npm test
