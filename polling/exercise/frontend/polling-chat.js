@@ -5,7 +5,8 @@ const msgs = document.getElementById("msgs");
 let allChat = [];
 
 // the interval to poll at in milliseconds
-const INTERVAL = 3000;
+const INTERVAL = 3000; // three sec
+const apiEndpoint = "/poll";
 
 // a submit listener on the form in the HTML
 chat.addEventListener("submit", function (e) {
@@ -14,14 +15,45 @@ chat.addEventListener("submit", function (e) {
   chat.elements.text.value = "";
 });
 
-async function postNewMsg(user, text) {
+async function getNewMsgs() {
   // post to /poll a new message
-  // write code here
+  try {
+    const res = await fetch(apiEndpoint);
+    if (!res.ok) throw new Error(res.status);
+    const json = await res.json();
+
+    allChat = json.msg;
+    render();
+  }
+  catch (e){
+    console.error("polling error", e);
+
+    return;
+  }
+
+
+  setTimeout(getNewMsgs, INTERVAL)
 }
 
-async function getNewMsgs() {
+//HTTP post request
+async function postNewMsg(user, text) {
   // poll the server
   // write code here
+  const data = {
+    user,
+    text,
+  }
+  const options = {
+    method: "POST",
+    body: JSON.stringify(data), //converts data to JSON
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  const res = await fetch(apiEndpoint, options);
+  const json = await res.json();
+
 }
 
 function render() {
@@ -31,6 +63,8 @@ function render() {
     template(user, text, time, id)
   );
   msgs.innerHTML = html.join("\n");
+
+
 }
 
 // given a user and a msg, it returns an HTML string to render to the UI
